@@ -1,0 +1,32 @@
+---
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Ubuntu Operating System Updates
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install necessary dependancies on Ubuntu server
+      apt:
+        name: 
+          - python3
+          - python3-pip
+          - docker.io
+        state: present  
+
+    - name:
+      lineinfile:
+        path: "/home/devasc/Documents/SkillsExam/ansible-project/Dockerfile"
+        line: |
+          FROM httpd:alphine
+          COPY ./SkillsExam/ansible-project/225015765/index.html usr/local/apache2/htdocs
+          EXPOSE 80
+          CMD ["httpd-foreground"]
+
+    - name: Build Docker image
+      command: docker build -t mywebsite /home/devasc/Documents/SkillsExam/ansible-project
+
+    - name: Run Docker image
+      command: docker run -t -d -p 8082:80 --name mysite mywebsite
+
